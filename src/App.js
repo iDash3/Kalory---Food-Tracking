@@ -1,56 +1,45 @@
 import "./App.css";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Quagga from "quagga";
 
 const Scanner = ({ onDetect }) => {
-  useEffect(() => {
-    function fetchCamera() {
-      Quagga.init(
-        {
-          inputStream: {
-            name: "Live",
-            type: "LiveStream",
-            target: document.querySelector("#camera"), // Or '#yourElement' (optional)
-          },
-          numOfWorkers: 0,
-          locate: true,
-          constraints: {
-            width: 640,
-            height: 480,
-            facingMode: "environment",
-          },
-          decoder: {
-            readers: [
-              "ean_reader",
-              "ean_8_reader",
-              "upc_reader",
-              "upc_e_reader",
-            ],
-          },
+  const handleInit = useCallback(() => {
+    Quagga.init(
+      {
+        inputStream: {
+          name: "Live",
+          type: "LiveStream",
+          target: document.querySelector("#camera"), // Or '#yourElement' (optional)
         },
-        function (err) {
-          if (err) {
-            console.log(err);
-            return;
-          }
-
-          console.log("Initialization finished. Ready to start");
-          Quagga.start();
+        numOfWorkers: 0,
+        locate: true,
+        constraints: {
+          width: 640,
+          height: 480,
+          facingMode: "environment",
+        },
+        decoder: {
+          readers: ["ean_reader", "ean_8_reader", "upc_reader", "upc_e_reader"],
+        },
+      },
+      function (err) {
+        if (err) {
+          console.log(err);
+          return;
         }
-      );
 
-      Quagga.onDetected(function (result) {
-        var cod = result.codeResult.code;
-        onDetect(cod);
-        console.log(cod);
-      });
+        console.log("Initialization finished. Ready to start");
+        Quagga.start();
+      }
+    );
 
-      console.log("Effect");
-    }
+    console.log("New Effect");
+  }, []);
 
-    fetchCamera();
-  });
+  useEffect(() => {
+    handleInit();
+  }, [handleInit]);
 
   return null;
 };
@@ -78,6 +67,12 @@ function App() {
   const [count, setCount] = useState({});
   const [max, setMax] = useState();
   const [content, setContent] = useState();
+
+  Quagga.onDetected(function (result) {
+    var cod = result.codeResult.code;
+    console.log(cod);
+    _handleDetect(cod);
+  });
 
   const startCamera = () => {};
   const closeCamera = () => {
