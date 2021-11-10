@@ -4,49 +4,56 @@ import { useEffect, useState } from "react";
 import Quagga from "quagga";
 
 const Scanner = ({ onDetect }) => {
+  const [code, setCode] = useState();
+
   useEffect(() => {
-    Quagga.init(
-      {
-        inputStream: {
-          name: "Live",
-          type: "LiveStream",
-          target: document.querySelector("#camera"), // Or '#yourElement' (optional)
+    function fetchCamera() {
+      Quagga.init(
+        {
+          inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: document.querySelector("#camera"), // Or '#yourElement' (optional)
+          },
+          numOfWorkers: 0,
+          locate: true,
+          constraints: {
+            width: 640,
+            height: 480,
+            facingMode: "environment",
+          },
+          decoder: {
+            readers: [
+              "ean_reader",
+              "ean_8_reader",
+              "upc_reader",
+              "upc_e_reader",
+            ],
+          },
         },
-        numOfWorkers: 0,
-        locate: true,
-        constraints: {
-          width: 640,
-          height: 480,
-          facingMode: "environment",
-        },
-        decoder: {
-          readers: ["ean_reader", "ean_8_reader", "upc_reader", "upc_e_reader"],
-        },
-      },
-      function (err) {
-        if (err) {
-          console.log(err);
-          return;
+        function (err) {
+          if (err) {
+            console.log(err);
+            return;
+          }
+
+          console.log("Initialization finished. Ready to start");
+          Quagga.start();
         }
+      );
 
-        console.log("Initialization finished. Ready to start");
-        Quagga.start();
-      }
-    );
+      Quagga.onDetected(function (result) {
+        var cod = result.codeResult.code;
+        console.log(cod);
+        setCode(cod);
+      });
 
-    Quagga.onDetected(function (result) {
-      var code = result.codeResult.code;
-      console.log(code);
       onDetect(code);
-    });
+      console.log("Effect");
+    }
 
-    console.log("Effect");
-
-    return () => {
-      // Quagga.offDetected()
-      console.log("Cleanup");
-    };
-  }, []);
+    fetchCamera();
+  });
 
   return null;
 };
