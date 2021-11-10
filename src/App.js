@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import Quagga from "quagga";
 
 const Scanner = ({ onDetect }) => {
-  const [code, setCode] = useState();
-
   useEffect(() => {
     function fetchCamera() {
       Quagga.init(
@@ -44,11 +42,10 @@ const Scanner = ({ onDetect }) => {
 
       Quagga.onDetected(function (result) {
         var cod = result.codeResult.code;
+        onDetect(cod);
         console.log(cod);
-        setCode(cod);
       });
 
-      onDetect(code);
       console.log("Effect");
     }
 
