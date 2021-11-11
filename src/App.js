@@ -104,8 +104,6 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <div id="camera"></div>
-        {power && <Scanner onDetect={_handleDetect} />}
         <AppButton
           title={power ? "Turn off" : "Turn on "}
           onClick={() => {
@@ -139,6 +137,9 @@ function App() {
           }}
         ></AppButton>
         <p>{content}</p>
+
+        <div id="camera"></div>
+        {power && <Scanner onDetect={_handleDetect} />}
       </header>
     </div>
   );
