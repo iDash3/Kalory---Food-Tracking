@@ -13,7 +13,7 @@ const Scanner = ({ onDetect }) => {
           target: document.querySelector("#camera"), // Or '#yourElement' (optional)
         },
         numOfWorkers: 0,
-        frequency: 10,
+        frequency: 3,
         locate: true,
         constraints: {
           width: 640,
